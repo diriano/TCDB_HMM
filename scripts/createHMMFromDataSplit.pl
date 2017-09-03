@@ -109,6 +109,10 @@ else{
  $id_class{$ids_shuffled[0]}='TruePositiveTraining';
  $trainingSeqs_aln = $truePositives;
 } 
+###Count number of sequences in training set
+open trainingSeqs, $outfileTraining;
+my @headersTraining=grep /^>/, <trainingSeqs>;
+close trainingSeqs;
 
 ###Build HMM
 print STDOUT "Creating HMM based on $trainingSeqs_aln".localtime()."\n";
@@ -167,7 +171,7 @@ print STDOUT "Generating R graph ".localtime()."\n";
 my $rTitle=$nameHmm."_".$$;
 
 my ($filename,$filepath) = fileparse($hmmsearchOutShort);
-my $rscript=generateRscript($hmmsearchOutShort,$rTitle,$filepath);
+my $rscript=generateRscript($hmmsearchOutShort,$rTitle,$filepath,scalar(@ids),scalar(@headersTraining));
 my $RscriptOut=$rTitle.".R";
 open OUT, ">$RscriptOut";
 print OUT $rscript."\n";
@@ -179,9 +183,11 @@ unlink $rscript;
 
 
 sub generateRscript{
- my $tbl     =shift;
- my $title   =shift;
- my $path    =shift;
+ my $tbl       =shift;
+ my $title     =shift;
+ my $path      =shift;
+ my $nSeqsTotal=shift;
+ my $nSeqsTrain=shift;
  my $selectGA=$title.".selectGA.tbl";
  my $pdfFileScores =$title.".Scores.R.pdf";
  my $pdfFileEvalues =$title.".Evalues.R.pdf";
@@ -209,8 +215,8 @@ if(minTP >= maxTN){
 }else{
  statusGA='NotOK'
 }
-res<-cbind("$title",maxTN,minTP,putativeGA,statusGA)
-colnames(res)<-c('Model','maxTN','minTP','pGA','statusGA') 
+res<-cbind("$title",maxTN,minTP,putativeGA,statusGA,"$nSeqsTotal","$nSeqsTrain")
+colnames(res)<-c('Model','maxTN','minTP','pGA','statusGA','NumberSeqsTotal','NumberSeqsTraining') 
 write.table(res,file="$selectGA",row.names=F,sep="\t",quote=F)
 pdf(file="$pdfFileScores",width=12)
 ggplot(hmmsearch,aes(x=SeqID,y=Score,colour=Class))+
