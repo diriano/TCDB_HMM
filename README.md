@@ -1,2 +1,2 @@
 # TCDB_HMM
-Collection of Hidden MArkov Models to identify protein transporters
+Collection of Hidden Markov Models to identify protein transporters
