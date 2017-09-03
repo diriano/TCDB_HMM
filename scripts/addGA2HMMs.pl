@@ -39,77 +39,49 @@ open(GAFILE, $GAfile);
 while(<GAFILE>) {
  chomp;
  next if (/^Model/);
- my ($Model,$maxTN,$minTP,$pGA)=split(/\t/,$_);
+ my ($Model,$maxTN,$minTP,$pGA,$statusGA)=split(/\t/);
  my ($Family,undef)=split(/_/,$Model);
  my $hmmFile = $Model.".hmm";
- my ($modelAC,$run)=split(/_/,$Model);
- my $fastaFile='tcdb_group_'.$modelAC.'.fasta';
- my $numberSequences=getNumberOfSequences($fastaFile);
- print "\n\n\n$fastaFile $numberSequences\n\n\n";
- #print "Checking HMM: $hmmFile\n";
- if($maxTN < $minTP) { # Expected situation
- #print "Expected case (maxTN < minTP): $Model\t$Family\t$maxTN\t$minTP\t$pGA\n";
-  open(HMM,"<",$hmmFile);
-  my $modHmmFile = $hmmFile;
-  $modHmmFile =~ s/\.hmm/\.mod\.hmm/g;
-  open(MODHMM,">>",$modHmmFile);
-  while(<HMM>){
-   chomp;
-   if(/^CKSUM/){
-    if ($maxTN =~ /\-Inf/){
-     print MODHMM "$_\nGA    $minTP $minTP\n";
-    } else {
-     print MODHMM "$_\nGA    $pGA $pGA\n";
-    }
-   } else {
-    print MODHMM "$_\n";
-   }
-  }
-  close(MODHMM);
-  close(HMM);
- } elsif ($maxTN > $minTP) {
-  print "Clustering with CD-HIT: $Model\t$Family\t$maxTN\t$minTP\t$pGA\n";
- } else {
-  if($maxTN == $minTP) {
-   #print "Unexpected, but possible case (maxTN equal to minTP): $Model\t$Family\t$maxTN\t$minTP\t$pGA\n";
-   open(HMM,"<",$hmmFile);
-   my $modHmmFile = $hmmFile;
-   $modHmmFile =~ s/\.hmm/\.mod\.hmm/g;
-   open(MODHMM,">>",$modHmmFile);
-   while(<HMM>){
-    chomp;
-    if(/^CKSUM/){
-     print MODHMM "$_\nGA    $maxTN $maxTN\n";
-    } else {
-     print MODHMM "$_\n";
-    }
-  }
-   close(MODHMM);
-   close(HMM);
-  } else {
-   die "Something wrong with $Model\t$Family\t$maxTN\t$minTP\t$pGA\n";
-  }
+ #Checking whether GA is well defined, and if so update HMM;
+ if($statusGA eq 'OK'){
+  addGA2HMM($hmmFile,$pGA);
+ }
+ elsif($statusGA eq 'NotOK'){
+  warn "GA is not well defined in family $Family, $Model, file: $hmmFile\n"
+ }
+ else {
+  warn "Something wrong with $Model\t$Family\t$maxTN\t$minTP\t$pGA\n";
  }
 }
-
 close(GAFILE);
 
-sub getNumberOfSequences{
- my $file=shift;
- open FILE, $file;
- my @headers=grep /^>/, <FILE>;
- close FILE;
- return(scalar(@headers));
+sub addGA2HMM{
+ my $oldFile=shift;
+ my $pGA    =shift;
+ open(OLDHMM,"<",$oldFile);
+ my $newFile = $oldFile;
+ $newFile =~ s/\.hmm/\.mod\.hmm/g;
+ open(NEWHMM,">",$newFile);
+ while(<OLDHMM>){
+  chomp;
+  if(/^CKSUM/){
+   print NEWHMM "$_\nGA    $pGA $pGA\n";
+  } else {
+   print NEWHMM "$_\n";
+  }
+ }
+ close(NEWHMM);
+ close(OLDHMM);
 }
 
 sub usage{
-    print STDERR "$0 version $version, Copyright (C) 2017 Diego Mauricio Riaño Pachón\n";
+    print STDERR "$0 version $version, Copyright (C) 2017 Diego Mauricio Riaño Pachón, Renato Augusto Correa dos Santos\n";
     print STDERR "$0 comes with ABSOLUTELY NO WARRANTY; for details type `$0 -l'.\n";
     print STDERR "This is free software, and you are welcome to redistribute it under certain conditions;\n";
     print STDERR "type `$0 -l' for details.\n";
     print STDERR <<EOF;
 NAME
-    $0   Modifies an HMM to add the GA line. It will generate a lit of the HMMs where the GA is not defined.
+    $0   Modifies an HMM to add the GA line. It will generate a list of the HMMs where the GA is not defined.
 
 USAGE
     $0 --ga_file all.selectedGA.tbl
@@ -145,4 +117,3 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 EOF
 exit;
 }
-
