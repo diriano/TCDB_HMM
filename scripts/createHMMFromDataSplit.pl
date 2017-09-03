@@ -61,8 +61,8 @@ my @ids = $db->get_all_primary_ids;
 my $n = int(scalar(@ids)* 0.5);
 my @ids_shuffled=shuffle(@ids);
 
-my $outfileTraining=$truePositives.".trainingseqs_".$$.".fasta";
-my $outfileTesting =$truePositives.".testingseqs_".$$.".fasta";
+my $outfileTraining=$truePositives.".trainingseqs.fasta";
+my $outfileTesting =$truePositives.".testingseqs.fasta";
 my $trainingSeqs_out = Bio::SeqIO->new(
                               -file   => ">$outfileTraining",
                               -format => 'fasta',
@@ -196,11 +196,21 @@ if(checkEval == 0){
  title = paste("$title", "\\nEvalue has pseudocounts (+1e-323), actual value is 0 for TP", sep=" ")
  hmmsearch\$Evalue<-hmmsearch\$Evalue+1e-323
 }
-maxTN<-max(hmmsearch[ which(hmmsearch\$Class == 'TrueNegative'),'Score'])
+if(length(hmmsearch[ which(hmmsearch\$Class == 'TrueNegative'),'Score']) == 0 ){
+ #Dealing with the case where there are no True Negatives, the maxTN will be set as the mininum score achieved by a true positive
+ maxTN<-min(hmmsearch[,'Score'])
+}else{
+ maxTN<-max(hmmsearch[ which(hmmsearch\$Class == 'TrueNegative'),'Score'])
+}
 minTP<-min(hmmsearch[ which(hmmsearch\$Class == 'TruePositiveTraining' | hmmsearch\$Class == 'TruePositiveTest'),'Score'])
 putativeGA=minTP-((minTP-maxTN)/2)
-res<-cbind("$title",maxTN,minTP,putativeGA)
-colnames(res)<-c('Model','maxTN','minTP','pGA')
+if(minTP >= maxTN){
+ statusGA='OK'
+}else{
+ statusGA='NotOK'
+}
+res<-cbind("$title",maxTN,minTP,putativeGA,statusGA)
+colnames(res)<-c('Model','maxTN','minTP','pGA','statusGA') 
 write.table(res,file="$selectGA",row.names=F,sep="\t",quote=F)
 pdf(file="$pdfFileScores",width=12)
 ggplot(hmmsearch,aes(x=SeqID,y=Score,colour=Class))+
