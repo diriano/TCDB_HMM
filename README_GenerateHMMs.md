@@ -32,10 +32,29 @@ You can use this recipe to generate the file (From the folder where tcdb.fasta a
   cat seq2family_refseq.temp.txt seq2family_tcdb.temp.txt |sort -u > ../../mapping/seq2family.txt
   rm seq2family_tcdb.temp.txt seq2family_refseq.temp.txt
 
-4. Generate one fasta file per group, with all the sequence in that group. Run the following in the base dir.
+3. Generate one fasta file per group, with all the sequence in that group. Run the following in the base dir.
   ./scripts/getSequencesPerGroup.pl -f fasta/all/tcdb_plus_refseq.fasta -i mapping/seq2family.txt
   mv tcdb_group_* fasta/seeds/
 
-5. Run the script createHMMFromDataSplit.pl for each of the fasta files in (fasta/seeds/). 
+4. Run the script createHMMFromDataSplit.pl for each of the fasta files in (fasta/seeds/). 
   for seedFile in $(ls -1 *.fasta); do seedName=${seedFile/tcdb_group_};seedName=${seedName/\.fasta};../../scripts/createHMMFromDataSplit.pl --truepositives $seedFile --all ../all/tcdb_plus_refseq.fasta --name $seedName; done
 
+ This will take a few hours, go for a walk on the park!
+
+5. The run of createHMMFromDataSplit.pl will create a *.selectGA.tbl file for each family, concatenate them in a single file:
+
+  cat *selectGA.tbl > all.selGA.tbl #This is ran from within the fasta/seeds folder
+
+ Then we need to check which families have a well defined GA, that is where the minimal score for TP is higher than the maximal score for TN. For these families we will keep the generated HMM and for the remaining the HMM will be discarded. The families with well defined GA, will have the string 'OK' in the column StatusGA in the file all.selGA.tbl
+ 
+ Counting the number of families with not defined GA:
+
+  cat *select*|grep -v Model|grep NotOK|wc -l #Results in 902 families. You results migth vary.
+
+ And the number of families with defined GA:
+
+  cat *select*|grep -v Model|grep -v NotOK|wc -l #Results in 1636 families
+
+6. We try further with these families with not definbed GA. We will cluster at 90% identity and for each cluster we run the whole process again.
+
+  ../scripts/clusterSequences.pl -g all.selGA.tbl -i 0.9 #From within the fasta/seeds folder
