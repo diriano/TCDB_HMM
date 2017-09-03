@@ -48,7 +48,7 @@ if (!-s $truePositives){
     exit(1);
 }
 if(!-s $allSeqs){
-    print STDERR "FATAL:  You must provide a multifasta file with sequences of true potives and true negatives.\n";
+    print STDERR "FATAL:  You must provide a multifasta file with sequences of true positives and true negatives.\n";
     &usage();
     exit(1);
 }
