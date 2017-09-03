@@ -113,7 +113,7 @@ sub getRequestedIdentifiers{
 }
 
 sub usage{
-    print STDERR "$0 version $version, Copyright (C) 2010-2015 Diego Mauricio Riano Pachon\n";
+    print STDERR "$0 version $version, Copyright (C) 2010-2017 Diego Mauricio Riano Pachon\n";
     print STDERR "$0 comes with ABSOLUTELY NO WARRANTY; for details type `$0 -l'.\n";
     print STDERR "This is free software, and you are welcome to redistribute it under certain conditions;\n";
     print STDERR "type `$0 -l' for details.\n";
@@ -135,7 +135,7 @@ EOF
 sub license{
     print STDERR <<EOF;
 
-Copyright (C) 2010-2015 Diego Mauricio Riaño Pach<C3>
+Copyright (C) 2010-2017 Diego Mauricio Riaño Pach<C3>
 e-mail: diriano\@gmail.com
 
 This program is free software; you can redistribute it and/or

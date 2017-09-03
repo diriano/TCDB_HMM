@@ -226,7 +226,7 @@ dev.off()
 RSCRIPT
 }
 sub usage{
-    print STDERR "$0 version $version, Copyright (C) 2016 Diego Mauricio Riaño Pachón\n";
+    print STDERR "$0 version $version, Copyright (C) 2016-2017 Diego Mauricio Riaño Pachón\n";
     print STDERR "$0 comes with ABSOLUTELY NO WARRANTY; for details type `$0 -l'.\n";
     print STDERR "This is free software, and you are welcome to redistribute it under certain conditions;\n";
     print STDERR "type `$0 -l' for details.\n";
@@ -251,9 +251,9 @@ EOF
 sub license{
     print STDERR <<EOF;
 
-Copyright (C) 2016 Diego Mauricio Riaño Pachón
-http://bce.bioetanol.org.br/
-e-mail: diego.riano\@bioetanol.org.br
+Copyright (C) 2016-2017 Diego Mauricio Riaño Pachón
+https://diriano.github.io/
+e-mail: diriano\@gmail.com
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
