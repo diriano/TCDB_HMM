@@ -210,7 +210,11 @@ if(length(hmmsearch[ which(hmmsearch\$Class == 'TrueNegative'),'Score']) == 0 ){
 }
 minTP<-min(hmmsearch[ which(hmmsearch\$Class == 'TruePositiveTraining' | hmmsearch\$Class == 'TruePositiveTest'),'Score'])
 putativeGA=minTP-((minTP-maxTN)/2)
-if(minTP >= maxTN){
+if(maxTN == -9999999){
+ statusGA='NotOK'
+}else if(minTP == -9999999){
+ statusGA='NotOK'
+}else if(minTP >= maxTN){
  statusGA='OK'
 }else{
  statusGA='NotOK'
