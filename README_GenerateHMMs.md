@@ -55,6 +55,15 @@ You can use this recipe to generate the file (From the folder where tcdb.fasta a
 
   cat *select*|grep -v Model|grep -v NotOK|wc -l #Results in 1636 families
 
-6. We try further with these families with not definbed GA. We will cluster at 90% identity and for each cluster we run the whole process again.
+ Adding the GA line to the hmm file for the families with well defined GA:
+
+  ../../TCDB_HMM/scripts/addGA2HMMs.pl -g all.selGA.tbl #From within the fasta/seeds folder
+
+ That will generate the *.mod.hmm files, which can be concatenated for later use.
+
+  mkdir ../../HMMs
+  cat *mod.hmm > ../../HMMs/TCDB_HMMs.hmm #From within the fasta/seeds folder
+
+6. We try further with the families with not defined GA. We will cluster at 90% identity and for each cluster we run the whole process again.
 
   ../scripts/clusterSequences.pl -g all.selGA.tbl -i 0.9 #From within the fasta/seeds folder
