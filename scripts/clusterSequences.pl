@@ -68,8 +68,9 @@ while(<selectGA>){
  chomp;
  next if /^Model/;
  my ($model,$maxTN,$minTP,$pGA,$statusGA,$NumberSeqsTotal,$NumberSeqsTraining)=split(/\t/);
- my ($family,undef)=split(/_/,$model);
  next if $statusGA eq 'OK';
+ my $family=$model;
+ $family=~s/\d+$//;
  my $familySeqs='tcdb_group_'.$family.'.fasta';
  my $familyClusteredFasta=$outDir.'/tmp/tcdb_group_'.$family.'_cdhit'.$ident.'.fasta';
  my $familyClusterClstr=$outDir.'/tmp/tcdb_group_'.$family.'_cdhit'.$ident.'.fasta.clstr';
