@@ -221,6 +221,7 @@ if(maxTN == -9999999){
 }
 res<-cbind("$title",maxTN,minTP,putativeGA,statusGA,"$nSeqsTotal","$nSeqsTrain")
 colnames(res)<-c('Model','maxTN','minTP','pGA','statusGA','NumberSeqsTotal','NumberSeqsTraining') 
+hmmsearch\$SeqID<-factor(hmmsearch\$SeqID,levels=hmmsearch[order(hmmsearch\$Score),'SeqID'])
 write.table(res,file="$selectGA",row.names=F,sep="\t",quote=F)
 pdf(file="$pdfFileScores",width=12)
 ggplot(hmmsearch,aes(x=SeqID,y=Score,colour=Class))+
