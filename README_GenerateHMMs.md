@@ -57,7 +57,7 @@ You can use this recipe to generate the file (From the folder where tcdb.fasta a
 
  Adding the GA line to the hmm file for the families with well defined GA:
 
-  ../../TCDB_HMM/scripts/addGA2HMMs.pl -g all.selGA.tbl #From within the fasta/seeds folder
+  ../../scripts/addGA2HMMs.pl -g all.selGA.tbl #From within the fasta/seeds folder
 
  That will generate the *.mod.hmm files, which can be concatenated for later use.
 
@@ -67,3 +67,21 @@ You can use this recipe to generate the file (From the folder where tcdb.fasta a
 6. We try further with the families with not defined GA. We will cluster at 90% identity and for each cluster we run the whole process again.
 
   ../scripts/clusterSequences.pl -g all.selGA.tbl -i 0.9 #From within the fasta/seeds folder
+  cd seeds_cdhit_0.9
+  for seedFile in $(ls -1 *.fasta); do seedName=${seedFile/tcdb_group_};seedName=${seedName/\.fasta};../../../scripts/createHMMFromDataSplit.pl --truepositives $seedFile --all ../../all/tcdb_plus_refseq.fasta --name $seedName; done
+  cat *selectGA.tbl > all.selGA.tbl
+  ../../scripts/addGA2HMMs.pl -g all.selGA.tbl
+  cat *mod.hmm >> ../../../HMMs/TCDB_HMMs.hmm
+  
+7. We try again with the families with not defined GA. We will cluster at 95% identity and for each cluster we run the whole process again.
+
+  ../../scripts/clusterSequences.pl -g all.selGA.tbl -i 0.95 #From within the fasta/seeds/seeds_cdhit_0.9 folder
+  cd seeds_cdhit_0.95
+  for seedFile in $(ls -1 *.fasta); do seedName=${seedFile/tcdb_group_};seedName=${seedName/\.fasta};../../../../scripts/createHMMFromDataSplit.pl --truepositives $seedFile --all ../../../all/tcdb_plus_refseq.fasta --name $seedName; done
+  cat *selectGA.tbl > all.selGA.tbl
+  ../../scripts/addGA2HMMs.pl -g all.selGA.tbl
+  cat *mod.hmm >> ../../../HMMs/TCDB_HMMs.hmm
+
+8. One more try, clustering at 99%
+
+  ../../scripts/clusterSequences.pl -g all.selGA.tbl -i 0.95 #From within the fasta/seeds/seeds_cdhit_0.9/seeds_cdhit_0.95/ folder
