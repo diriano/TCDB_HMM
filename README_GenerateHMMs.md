@@ -84,4 +84,18 @@ You can use this recipe to generate the file (From the folder where tcdb.fasta a
 
 8. One more try, clustering at 99%
 
-  ../../scripts/clusterSequences.pl -g all.selGA.tbl -i 0.95 #From within the fasta/seeds/seeds_cdhit_0.9/seeds_cdhit_0.95/ folder
+ ../../scripts/clusterSequences.pl -g all.selGA.tbl -i 0.99 #From within the fasta/seeds/seeds_cdhit_0.9/seeds_cdhit_0.95 folder
+ cd seeds_cdhit_0.99
+ for seedFile in $(ls -1 *.fasta); do seedName=${seedFile/tcdb_group_};seedName=${seedName/\.fasta};../../../../../scripts/createHMMFromDataSplit.pl --truepositives $seedFile --all ../../../../all/tcdb_plus_refseq.fasta --name $seedName; done
+ cat *selectGA.tbl > all.selGA.tbl
+ ../../../../../scripts/addGA2HMMs.pl -g all.selGA.tbl
+ cat *mod.hmm >> ../../../../../HMMs/TCDB_HMMs.hmm
+
+9. And last time clustering at 100%
+
+ ../../../../../TCDB_HMM/scripts/clusterSequences.pl -g all.selGA.tbl -i 1
+ cd seeds_cdhit_1/
+ for seedFile in $(ls -1 *.fasta); do seedName=${seedFile/tcdb_group_};seedName=${seedName/\.fasta};../../../../../../scripts/createHMMFromDataSplit.pl --truepositives $seedFile --all ../../../../../all/tcdb_plus_refseq.fasta --name $seedName; done
+ cat *selectGA.tbl > all.selGA.tbl
+ ../../../../../../scripts/addGA2HMMs.pl -g all.selGA.tbl
+ cat *mod.hmm >> ../../../../../../HMMs/TCDB_HMMs.hmm
