@@ -125,9 +125,12 @@ system("$hmmbuildCmd");
 ###Run hmmsearch with a low threshold, keep the domtblout output
 print STDOUT "Running hmmsearch on full set of proteins ".localtime()."\n";
 my $hmmsearchOut=$allSeqsFilename."_vs_".$nameHmm."_$$.hmmsearch.domtblout";
-my $hmmsearchCmd="hmmsearch -o /dev/null --domtblout $hmmsearchOut -E 100000 --domE 100000  --incE 100000 --incdomE 100000 -Z 100000 --domZ 100000 $hmmFile $allSeqs";
+my $hmmsearchCmd="hmmsearch -o /dev/null --domtblout tempSearchOut.hmmsearch.domtblout -E 100000 --domE 100000  --incE 100000 --incdomE 100000 -Z 100000 --domZ 100000 $hmmFile $allSeqs";
 print $hmmsearchCmd."\n" if $debug >4;
 system("$hmmsearchCmd");
+my $renameCmd="mv tempSearchOut.hmmsearch.domtblout $hmmsearchOut";
+print "$renameCmd\n\n";
+system("$renameCmd");
 
 ###Parsing hmmsearch domtblout output
 my %resHmmsearch;
